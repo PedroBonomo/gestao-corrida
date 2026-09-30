@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://*.firebaseapp.com https://*.googleapis.com; script-src 'self' 'unsafe-inline' https://www.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:;">
     <title>Gestão de Corridas</title>
     <link rel="icon" href="beija.png">
     <style>
@@ -139,7 +140,8 @@
             transition: background 0.2s;
         }
 
-        button:active { filter: brightness(0.9); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button:active:not(:disabled) { filter: brightness(0.9); }
         button.btn-green { background: var(--success); }
         button.btn-google { background: #ea4335; color: white; margin-top: 4px; }
         button.btn-outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 6px; }
@@ -173,7 +175,9 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        .modal-card h4 { margin-top: 0; color: var(--danger); font-size: 1.1rem; }
+        .modal-card h4 { margin-top: 0; font-size: 1.1rem; }
+        .modal-card.title-danger h4 { color: var(--danger); }
+        .modal-card.title-success h4 { color: var(--success); }
         .modal-card p { font-size: 0.95rem; color: var(--text); margin: 12px 0; word-break: break-word; }
         .modal-card button { margin-bottom: 0; }
     </style>
@@ -206,11 +210,11 @@
     <div class="card" id="cardAuth">
         <h3 id="authTitle" style="margin-top:0;">Acessar Conta</h3>
         
-        <label>E-mail:</label>
-        <input type="email" id="authEmail" placeholder="seuemail@gmail.com">
+        <label for="authEmail">E-mail:</label>
+        <input type="email" id="authEmail" autocomplete="email" placeholder="seuemail@gmail.com">
         
-        <label>Senha:</label>
-        <input type="password" id="authPassword" placeholder="******">
+        <label for="authPassword">Senha:</label>
+        <input type="password" id="authPassword" autocomplete="current-password" placeholder="******">
         
         <button type="button" id="btnEntrar">Entrar</button>
         <button type="button" class="btn-outline" id="btnOpenRegisterModal" style="width: 100%;">Criar Conta com E-mail</button>
@@ -225,7 +229,7 @@
         <!-- HISTÓRICO NA NUVEM -->
         <div class="card hidden" id="cardHistorico">
             <h3 style="margin-top:0;">Histórico na Nuvem</h3>
-            <label>Filtrar por Mês:</label>
+            <label for="filtroMes">Filtrar por Mês:</label>
             <select id="filtroMes">
                 <option value="TODOS">Todos os Meses</option>
             </select>
@@ -238,7 +242,7 @@
         <!-- PAINEL DE METAS -->
         <div class="card dashboard">
             <div class="stat-box">
-                <button type="button" class="btn-edit-meta" id="btnOpenEditMeta" title="Editar Meta">✏️</button>
+                <button type="button" class="btn-edit-meta" id="btnOpenEditMeta" title="Editar Meta">✏️️</button>
                 <small style="color: var(--text-muted);">Meta</small>
                 <div class="stat-value text-blue" id="metaDisplay">R$ 1.200,00</div>
             </div>
@@ -255,13 +259,13 @@
         <!-- LANÇAMENTO DE CORRIDAS DO DIA -->
         <div class="card" id="cardLancarCorrida">
             <h3>Lançar Corrida</h3>
-            <label>Data do Trabalho:</label>
+            <label for="dataTrabalho">Data do Trabalho:</label>
             <input type="date" id="dataTrabalho">
 
-            <label>Nome/Descrição da Corrida (Opcional):</label>
+            <label for="nomeCorrida">Nome/Descrição da Corrida (Opcional):</label>
             <input type="text" id="nomeCorrida" placeholder="Ex: Entrega Lalamove Centro">
 
-            <label>Valor da Corrida (R$):</label>
+            <label for="valorCorrida">Valor da Corrida (R$):</label>
             <input type="number" id="valorCorrida" step="any" placeholder="ex: 15.50">
             <button type="button" id="btnAddCorrida">+ Adicionar Corrida</button>
             
@@ -273,15 +277,15 @@
             <h3>Fechar Expediente</h3>
             <div class="flex-row">
                 <div>
-                    <label>Odômetro (km):</label>
+                    <label for="odometroKm">Odômetro (km):</label>
                     <input type="number" id="odometroKm" step="any" placeholder="66.0">
                 </div>
                 <div>
-                    <label>Média (km/L):</label>
+                    <label for="mediaKmL">Média (km/L):</label>
                     <input type="number" id="mediaKmL" step="any" placeholder="37.7">
                 </div>
             </div>
-            <label>Preço do Litro da Gasolina (R$):</label>
+            <label for="precoGasolinaInput">Preço do Litro da Gasolina (R$):</label>
             <input type="number" id="precoGasolinaInput" step="any" placeholder="ex: 5.89">
             <button class="btn-green" type="button" id="btnFecharDia">Calcular e Salvar</button>
         </div>
@@ -293,22 +297,22 @@
     <div class="modal-card" style="text-align: left;">
         <h3 style="margin-top:0; text-align: center;">Criar Nova Conta</h3>
         
-        <label>Nome Completo:</label>
-        <input type="text" id="regNome" placeholder="Ex: Pedro Bonomo">
+        <label for="regNome">Nome Completo:</label>
+        <input type="text" id="regNome" autocomplete="name" placeholder="Ex: Pedro Bonomo">
 
-        <label>E-mail:</label>
-        <input type="email" id="regEmail" placeholder="seuemail@gmail.com">
+        <label for="regEmail">E-mail:</label>
+        <input type="email" id="regEmail" autocomplete="email" placeholder="seuemail@gmail.com">
 
-        <label>Senha (mínimo 6 caracteres):</label>
-        <input type="password" id="regSenha" placeholder="******">
+        <label for="regSenha">Senha (mínimo 8 caracteres):</label>
+        <input type="password" id="regSenha" autocomplete="new-password" placeholder="******">
 
-        <label>Confirmar Senha:</label>
-        <input type="password" id="regSenhaConfirma" placeholder="******">
+        <label for="regSenhaConfirma">Confirmar Senha:</label>
+        <input type="password" id="regSenhaConfirma" autocomplete="new-password" placeholder="******">
 
-        <label>Local onde roda (Cidade/Região):</label>
+        <label for="regLocal">Local onde roda (Cidade/Região):</label>
         <input type="text" id="regLocal" placeholder="Ex: Rio de Janeiro - RJ">
 
-        <label>Meta (R$):</label>
+        <label for="regMeta">Meta (R$):</label>
         <input type="number" id="regMeta" step="any" placeholder="1200.00">
 
         <button type="button" id="btnConfirmRegister">Concluir Cadastro</button>
@@ -320,7 +324,7 @@
 <div id="editMetaModal" class="modal-overlay hidden">
     <div class="modal-card" style="text-align: left;">
         <h3 style="margin-top:0; text-align: center;">Alterar Meta</h3>
-        <label>Novo Valor da Meta (R$):</label>
+        <label for="inputNovaMeta">Novo Valor da Meta (R$):</label>
         <input type="number" id="inputNovaMeta" step="any" placeholder="1200.00">
         <button type="button" id="btnSaveMeta">Salvar Nova Meta</button>
         <button type="button" class="btn-outline" id="btnCloseEditMetaModal" style="width: 100%;">Cancelar</button>
@@ -329,7 +333,7 @@
 
 <!-- MODAL DE ERROS / AVISOS -->
 <div id="errorModal" class="modal-overlay hidden">
-    <div class="modal-card">
+    <div class="modal-card title-danger" id="modalCardContainer">
         <h4 id="modalTitle">⚠️ Atenção</h4>
         <p id="modalMessage">Ocorreu um erro no sistema.</p>
         <button type="button" id="btnCloseModal">Entendi</button>
@@ -358,8 +362,20 @@
 
     let currentUser = null;
     let userProfile = { metaParcela: 1200.00, precoGasolina: 6.00, nome: "", local: "" };
-    let corridasHoje = JSON.parse(localStorage.getItem('corridasHoje')) || [];
+    let corridasHoje = [];
     let historicoNuvem = [];
+
+    // AUXILIARES DE SEGURANÇA E DATA LOCAL
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    
+    const getHojeLocal = () => {
+        const d = new Date();
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString().split('T')[0];
+    };
+
+    const formatBRL = (val) => Number(val || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const round2 = (val) => Math.round((Number(val) + Number.EPSILON) * 100) / 100;
 
     const nomesMeses = [
         "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -367,23 +383,24 @@
     ];
 
     function formatarMesExtenso(mesAnoStr) {
-        if (!mesAnoStr || !mesAnoStr.includes('/')) return mesAnoStr;
+        if (!mesAnoStr || !mesAnoStr.includes('/')) return esc(mesAnoStr);
         const [mes, ano] = mesAnoStr.split('/');
         const indiceMes = parseInt(mes, 10) - 1;
         if (indiceMes >= 0 && indiceMes < 12) {
             return `${nomesMeses[indiceMes]} de ${ano}`;
         }
-        return mesAnoStr;
+        return esc(mesAnoStr);
     }
 
-    // TRAVA DE DATA NO INPUT (DATA MÁXIMA É HOJE)
+    // INICIALIZAÇÃO DE DATA
     const inputData = document.getElementById('dataTrabalho');
-    const hojeStr = new Date().toISOString().split('T')[0];
-    inputData.max = hojeStr;
-    inputData.value = hojeStr;
+    inputData.max = getHojeLocal();
+    inputData.value = getHojeLocal();
 
-    // POP-UP DE ERRO
-    function showErrorPopup(message, title = "⚠️ Atenção") {
+    // POP-UP DE MENSAGENS E ERROS
+    function showErrorPopup(message, title = "⚠️ Atenção", isSuccess = false) {
+        const card = document.getElementById('modalCardContainer');
+        card.className = isSuccess ? 'modal-card title-success' : 'modal-card title-danger';
         document.getElementById('modalTitle').innerText = title;
         document.getElementById('modalMessage').innerText = message;
         document.getElementById('errorModal').classList.remove('hidden');
@@ -413,7 +430,7 @@
     });
 
     document.getElementById('btnSaveMeta').addEventListener('click', async () => {
-        const novaMeta = parseFloat(document.getElementById('inputNovaMeta').value);
+        const novaMeta = round2(document.getElementById('inputNovaMeta').value);
         if (isNaN(novaMeta) || novaMeta <= 0) {
             showErrorPopup('Digite um valor válido para a meta.');
             return;
@@ -426,14 +443,14 @@
             }
             document.getElementById('editMetaModal').classList.add('hidden');
             renderizarHistorico();
-            showErrorPopup('Meta atualizada com sucesso!', '🎉 Sucesso');
+            showErrorPopup('Meta atualizada com sucesso!', '🎉 Sucesso', true);
         } catch (err) {
             console.error("Erro ao salvar meta:", err);
-            showErrorPopup('Falha ao salvar a nova meta no banco de dados.');
+            showErrorPopup('Não foi possível salvar a nova meta. Tente novamente mais tarde.');
         }
     });
 
-    // MAPEAMENTO DE ERROS DO FIREBASE
+    // TRATAMENTO AMIGÁVEL DE ERROS DO FIREBASE
     function handleFirebaseError(error) {
         console.error("Firebase Error Code:", error.code);
         switch (error.code) {
@@ -453,30 +470,21 @@
                 showErrorPopup('Por favor, digite um endereço de e-mail válido.');
                 break;
             case 'auth/weak-password':
-                showErrorPopup('A senha deve ter no mínimo 6 caracteres.');
+                showErrorPopup('A senha deve ter no mínimo 8 caracteres.');
                 break;
             case 'auth/unauthorized-domain':
-                showErrorPopup('Este domínio não está autorizado no Console do Firebase em Authentication > Configurações > Domínios Autorizados.');
-                break;
-            case 'auth/operation-not-allowed':
-                showErrorPopup('Este método de login está desativado no Console do Firebase.');
+                showErrorPopup('Este domínio não está autorizado no Console do Firebase.');
                 break;
             case 'auth/popup-closed-by-user':
-                showErrorPopup('A janela de login do Google foi fechada antes de concluir o acesso.');
-                break;
-            case 'auth/popup-blocked':
-                showErrorPopup('O navegador bloqueou o pop-up de login. Permita pop-ups para este site.');
-                break;
-            case 'auth/network-request-failed':
-                showErrorPopup('Falha de conexão com a internet. Verifique sua rede.');
+                showErrorPopup('A janela de login do Google foi fechada antes de concluir.');
                 break;
             default:
-                showErrorPopup(`Erro (${error.code || 'Desconhecido'}): ${error.message}`);
+                showErrorPopup('Ocorreu uma falha na operação. Verifique sua conexão e tente novamente.');
                 break;
         }
     }
 
-    // Gerenciador de Tema
+    // GERENCIADOR DE TEMA
     const btnTheme = document.getElementById('btnToggleTheme');
     btnTheme.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
@@ -492,10 +500,21 @@
         btnTheme.innerText = '☀️';
     }
 
+    // CARREGAR CACHE DE CORRIDAS LOCALMENTE POR USUÁRIO
+    function carregarCorridasLocal(uid) {
+        try {
+            return JSON.parse(localStorage.getItem(`corridasHoje_${uid}`)) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
     // --- AUTENTICAÇÃO ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUser = user;
+            corridasHoje = carregarCorridasLocal(user.uid);
+            
             document.getElementById('cardAuth').classList.add('hidden');
             document.getElementById('appContent').classList.remove('hidden');
             document.getElementById('btnToggleHist').classList.remove('hidden');
@@ -505,6 +524,14 @@
             await carregarDadosNuvem();
         } else {
             currentUser = null;
+            corridasHoje = [];
+            historicoNuvem = [];
+            
+            // Reset de telas
+            document.getElementById('cardHistorico').classList.add('hidden');
+            document.getElementById('cardLancarCorrida').classList.remove('hidden');
+            document.getElementById('cardFecharExpediente').classList.remove('hidden');
+            
             document.getElementById('cardAuth').classList.remove('hidden');
             document.getElementById('appContent').classList.add('hidden');
             document.getElementById('btnToggleHist').classList.add('hidden');
@@ -520,23 +547,23 @@
             
             if (userSnap.exists()) {
                 const data = userSnap.data();
-                userProfile.metaParcela = data.metaParcela || 1200.00;
-                userProfile.precoGasolina = data.precoGasolina || 6.00;
+                userProfile.metaParcela = round2(data.metaParcela || 1200.00);
+                userProfile.precoGasolina = round2(data.precoGasolina || 6.00);
                 userProfile.nome = data.nome || "";
                 userProfile.local = data.local || "";
             } else {
+                // Não grava nada no banco se não existir (evita race condition no cadastro)
                 userProfile = { metaParcela: 1200.00, precoGasolina: 6.00, nome: "", local: "" };
-                await setDoc(userDocRef, userProfile, { merge: true });
             }
 
-            document.getElementById('metaDisplay').innerText = `R$ ${userProfile.metaParcela.toFixed(2)}`;
+            document.getElementById('metaDisplay').innerText = formatBRL(userProfile.metaParcela);
             document.getElementById('precoGasolinaInput').value = userProfile.precoGasolina.toFixed(2);
         } catch (err) {
             console.error("Erro ao carregar perfil:", err);
         }
     }
 
-    // Login com Google
+    // LOGIN GOOGLE
     document.getElementById('btnGoogleAuth').addEventListener('click', async () => {
         try {
             await signInWithPopup(auth, googleProvider);
@@ -545,7 +572,7 @@
         }
     });
 
-    // Login com E-mail
+    // LOGIN E-MAIL
     document.getElementById('btnEntrar').addEventListener('click', async () => {
         const email = document.getElementById('authEmail').value.trim();
         const password = document.getElementById('authPassword').value;
@@ -562,17 +589,22 @@
         }
     });
 
-    // Cadastro Completo no Modal
+    // CADASTRO NO MODAL
     document.getElementById('btnConfirmRegister').addEventListener('click', async () => {
         const nome = document.getElementById('regNome').value.trim();
         const email = document.getElementById('regEmail').value.trim();
         const senha = document.getElementById('regSenha').value;
         const senhaConfirma = document.getElementById('regSenhaConfirma').value;
         const local = document.getElementById('regLocal').value.trim();
-        const metaVal = parseFloat(document.getElementById('regMeta').value);
+        const metaVal = round2(document.getElementById('regMeta').value);
 
         if (!nome || !email || !senha || !local || isNaN(metaVal) || metaVal <= 0) {
             showErrorPopup('Por favor, preencha todos os campos corretamente.');
+            return;
+        }
+
+        if (senha.length < 8) {
+            showErrorPopup('A senha deve conter no mínimo 8 caracteres.');
             return;
         }
 
@@ -584,16 +616,20 @@
         try {
             const userCred = await createUserWithEmailAndPassword(auth, email, senha);
             
-            await setDoc(doc(db, "users", userCred.user.uid), {
+            // Garante gravação segura do perfil inicial
+            const perfilInicial = {
                 nome: nome,
                 email: email,
                 local: local,
                 metaParcela: metaVal,
                 precoGasolina: 6.00
-            });
+            };
+
+            await setDoc(doc(db, "users", userCred.user.uid), perfilInicial);
+            userProfile = perfilInicial;
 
             document.getElementById('registerModal').classList.add('hidden');
-            showErrorPopup('Conta criada com sucesso! Seja bem-vindo.', '🎉 Sucesso');
+            showErrorPopup('Conta criada com sucesso! Seja bem-vindo.', '🎉 Sucesso', true);
         } catch (error) {
             handleFirebaseError(error);
         }
@@ -619,7 +655,7 @@
             atualizarTelaGeral();
         } catch (error) {
             console.error("Erro ao carregar do Firebase:", error);
-            document.getElementById('listaHistorico').innerHTML = '<span style="color: var(--danger);">Erro ao carregar do banco.</span>';
+            document.getElementById('listaHistorico').innerHTML = '<span style="color: var(--danger);">Erro ao carregar os dados na nuvem.</span>';
         }
     }
 
@@ -654,7 +690,7 @@
     function adicionarCorridaLocal() {
         const inputValor = document.getElementById('valorCorrida');
         const inputNome = document.getElementById('nomeCorrida');
-        const valor = parseFloat(inputValor.value.replace(',', '.'));
+        const valor = round2(inputValor.value.replace(',', '.'));
         const nome = inputNome.value.trim();
         
         if (isNaN(valor) || valor <= 0) {
@@ -674,32 +710,38 @@
 
     async function fecharDia() {
         const btnFechar = document.getElementById('btnFecharDia');
+        btnFechar.disabled = true;
 
         try {
             if (corridasHoje.length === 0) {
                 showErrorPopup('Adicione pelo menos uma corrida antes de fechar o dia.', '⚠️ Nenhuma corrida');
+                btnFechar.disabled = false;
                 return;
             }
 
+            const hojeAtual = getHojeLocal();
             const dataVal = document.getElementById('dataTrabalho').value;
             const odoVal = document.getElementById('odometroKm').value;
             const mediaVal = document.getElementById('mediaKmL').value;
             const precoGasVal = document.getElementById('precoGasolinaInput').value;
 
-            if (!dataVal || dataVal > hojeStr) {
+            if (!dataVal || dataVal > hojeAtual) {
                 showErrorPopup('A data informada não pode ser uma data futura.', '⚠️ Data Inválida');
+                btnFechar.disabled = false;
                 return;
             }
 
-            const odometro = parseFloat(String(odoVal).replace(',', '.'));
-            const media = parseFloat(String(mediaVal).replace(',', '.'));
-            const precoGasolina = parseFloat(String(precoGasVal).replace(',', '.'));
+            const odometro = round2(String(odoVal).replace(',', '.'));
+            const media = round2(String(mediaVal).replace(',', '.'));
+            const precoGasolina = round2(String(precoGasVal).replace(',', '.'));
 
             if (isNaN(odometro) || isNaN(media) || isNaN(precoGasolina) || odometro <= 0 || media <= 0 || precoGasolina <= 0) {
                 showErrorPopup('Preencha o odômetro, a média e o preço do litro com valores válidos.', '⚠️ Dados Incompletos');
+                btnFechar.disabled = false;
                 return;
             }
 
+            // Atualiza o preço da gasolina na memória e no Firestore
             userProfile.precoGasolina = precoGasolina;
             await setDoc(doc(db, "users", currentUser.uid), { precoGasolina: precoGasolina }, { merge: true });
 
@@ -712,9 +754,9 @@
                 mesAno = `${partes[1]}/${partes[0]}`;
             }
 
-            const totalBruto = corridasHoje.reduce((a, b) => a + (typeof b === 'object' ? b.valor : b), 0);
-            const gastoGasolina = (odometro / media) * precoGasolina;
-            const lucroLiquido = totalBruto - gastoGasolina;
+            const totalBruto = round2(corridasHoje.reduce((a, b) => a + (typeof b === 'object' ? b.valor : b), 0));
+            const gastoGasolina = round2((odometro / media) * precoGasolina);
+            const lucroLiquido = round2(totalBruto - gastoGasolina);
 
             const novoDia = {
                 uid: currentUser.uid,
@@ -727,7 +769,6 @@
                 corridas: [...corridasHoje]
             };
 
-            btnFechar.disabled = true;
             btnFechar.innerText = 'Salvando...';
 
             await addDoc(collection(db, "historico_entregas"), novoDia);
@@ -737,7 +778,7 @@
             document.getElementById('mediaKmL').value = '';
             salvarLocalEAtualizar();
             await carregarDadosNuvem();
-            showErrorPopup('Seu expediente foi gravado com sucesso!', '🎉 Dia Salvo');
+            showErrorPopup('Seu expediente foi gravado com sucesso!', '🎉 Dia Salvo', true);
 
         } catch (error) {
             console.error("Erro ao salvar:", error);
@@ -749,7 +790,9 @@
     }
 
     function salvarLocalEAtualizar() {
-        localStorage.setItem('corridasHoje', JSON.stringify(corridasHoje));
+        if (currentUser) {
+            localStorage.setItem(`corridasHoje_${currentUser.uid}`, JSON.stringify(corridasHoje));
+        }
         atualizarTelaGeral();
     }
 
@@ -761,13 +804,14 @@
         if (corridasHoje.length > 0) {
             divCorridas.innerHTML = '<strong>Corridas da Sessão:</strong>';
             corridasHoje.forEach((item, index) => {
-                const val = typeof item === 'object' ? item.valor : item;
-                const nome = typeof item === 'object' && item.nome ? ` (${item.nome})` : '';
+                const val = round2(typeof item === 'object' ? item.valor : item);
+                const nomeRaw = typeof item === 'object' && item.nome ? item.nome : '';
+                const nomeExibicao = nomeRaw ? ` (${esc(nomeRaw)})` : '';
                 
                 totalBrutoHoje += val;
                 const row = document.createElement('div');
                 row.className = 'item-row';
-                row.innerHTML = `<span>Corrida #${index+1}${nome}: R$ ${val.toFixed(2)}</span>`;
+                row.innerHTML = `<span>Corrida #${index+1}${nomeExibicao}: ${formatBRL(val)}</span>`;
                 
                 const btnDel = document.createElement('button');
                 btnDel.className = 'btn-del';
@@ -784,7 +828,7 @@
             const totalRow = document.createElement('div');
             totalRow.className = 'item-row';
             totalRow.style.fontWeight = 'bold';
-            totalRow.innerHTML = `<span>Total Bruto:</span><span>R$ ${totalBrutoHoje.toFixed(2)}</span>`;
+            totalRow.innerHTML = `<span>Total Bruto:</span><span>${formatBRL(totalBrutoHoje)}</span>`;
             divCorridas.appendChild(totalRow);
         } else {
             divCorridas.innerHTML = '<span style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma corrida avulsa aberta.</span>';
@@ -796,11 +840,17 @@
     function renderizarHistorico() {
         const selectFiltro = document.getElementById('filtroMes');
         const valorSelecionado = selectFiltro.value;
-        const mesesDisponiveis = [...new Set(historicoNuvem.map(h => h.mesAno))];
+        
+        // Ordena meses cronologicamente para o filtro
+        const mesesDisponiveis = [...new Set(historicoNuvem.map(h => h.mesAno))].sort((a,b) => {
+            const [mA, aA] = a.split('/').map(Number);
+            const [mB, aB] = b.split('/').map(Number);
+            return (aB * 12 + mB) - (aA * 12 + mA);
+        });
         
         selectFiltro.innerHTML = '<option value="TODOS">Todos os Meses</option>';
         mesesDisponiveis.forEach(m => {
-            selectFiltro.innerHTML += `<option value="${m}">${formatarMesExtenso(m)}</option>`;
+            selectFiltro.innerHTML += `<option value="${esc(m)}">${formatarMesExtenso(m)}</option>`;
         });
         selectFiltro.value = valorSelecionado && mesesDisponiveis.includes(valorSelecionado) ? valorSelecionado : "TODOS";
 
@@ -819,8 +869,8 @@
                 if (item.corridas) {
                     corridasHtml = item.corridas.map((c, i) => {
                         const val = typeof c === 'object' ? c.valor : c;
-                        const nome = typeof c === 'object' && c.nome ? ` - ${c.nome}` : '';
-                        return `Corrida #${i+1}${nome}: R$ ${val.toFixed(2)}`;
+                        const nome = typeof c === 'object' && c.nome ? ` - ${esc(c.nome)}` : '';
+                        return `Corrida #${i+1}${nome}: ${formatBRL(val)}`;
                     }).join('<br>');
                 }
 
@@ -829,11 +879,11 @@
                 cardItem.innerHTML = `
                     <div class="item-row" style="border:none; padding:0;">
                         <div>
-                            <strong>${item.data}</strong> (${item.corridas ? item.corridas.length : 0} corridas)<br>
-                            <small style="color: var(--text-muted);">${formatarMesExtenso(item.mesAno)} | Bruto: R$ ${item.bruto.toFixed(2)} | Gasolina: -R$ ${item.gasolina.toFixed(2)}</small>
+                            <strong>${esc(item.data)}</strong> (${item.corridas ? item.corridas.length : 0} corridas)<br>
+                            <small style="color: var(--text-muted);">${formatarMesExtenso(item.mesAno)} | Bruto: ${formatBRL(item.bruto)} | Gasolina: -${formatBRL(item.gasolina)}</small>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: bold; color: var(--success);">+R$ ${item.lucro.toFixed(2)}</span>
+                            <span style="font-weight: bold; color: var(--success);">${formatBRL(item.lucro)}</span>
                             <button class="btn-del btn-apagar-dia">🗑️</button>
                         </div>
                     </div>
@@ -867,13 +917,13 @@
             divHistorico.innerHTML = '<span style="color: var(--text-muted);">Nenhum registro encontrado na nuvem.</span>';
         }
 
-        let lucroGeralNuvem = historicoNuvem.reduce((acc, h) => acc + h.lucro, 0);
+        let lucroGeralNuvem = round2(historicoNuvem.reduce((acc, h) => acc + (h.lucro || 0), 0));
         const metaAtual = userProfile.metaParcela || 1200.00;
-        const falta = Math.max(0, metaAtual - lucroGeralNuvem);
+        const falta = Math.max(0, round2(metaAtual - lucroGeralNuvem));
         
-        document.getElementById('metaDisplay').innerText = `R$ ${metaAtual.toFixed(2)}`;
-        document.getElementById('lucroTotalDisplay').innerText = `R$ ${lucroGeralNuvem.toFixed(2)}`;
-        document.getElementById('faltaDisplay').innerText = `R$ ${falta.toFixed(2)}`;
+        document.getElementById('metaDisplay').innerText = formatBRL(metaAtual);
+        document.getElementById('lucroTotalDisplay').innerText = formatBRL(lucroGeralNuvem);
+        document.getElementById('faltaDisplay').innerText = formatBRL(falta);
     }
 </script>
 </body>
